@@ -15,7 +15,6 @@ body,
   display: inline-block;
   border-radius: 5px;
   width: 500px;
-  display: block;
   overflow: auto;
   margin: 0.5%;
 }
@@ -49,4 +48,17 @@ body,
 img {
   margin-left: 75px;
   margin-right: 75px;
+}
+
+.error-message {
+  border: 1px solid black;
+  margin: 5px;
+  background-color: red;
+}
+
+.error-message-p {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 1.2rem;
+  font-weight: bold;
 }

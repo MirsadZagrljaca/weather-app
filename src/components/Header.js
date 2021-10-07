@@ -11,9 +11,8 @@ const btnStyle = {
   borderRadius: "10px",
   padding: "0.25rem",
   borderColor: "#68cbf8",
-  position: "absolute",
-  top: "15px",
-  left: "435px",
+  marginTop: "-75px",
+  marginLeft: "435px",
 };
 
 export default function Header({ onClick }) {

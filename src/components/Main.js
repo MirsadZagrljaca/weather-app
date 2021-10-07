@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import { TextField } from "@material-ui/core";
 import axios from "axios";
@@ -22,6 +22,7 @@ export default function Main() {
   const [data, setData] = useState([]);
   const [isFormOn, setIsFormOn] = useState(false);
   const [city, setCity] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const URL = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=metric&type=accurate&APPID=${KEY}`;
 
@@ -77,62 +78,100 @@ export default function Main() {
 
           setData([...data, tempData]);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          setErrorMessage("That City Couldn't Be Found!");
+        });
 
       setIsFormOn(false);
+      setErrorMessage(" ");
     }
   };
 
   const removeHandler = (index) => {
     let newData = [];
+    let j = 0;
 
     for (let i = 0; i < data.length; i++) {
       if (i !== index) {
-        newData[i] = data[i];
+        newData[j] = data[i];
+        j++;
       }
     }
 
     setData(newData);
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("data") === null) return;
+
+    if (JSON.parse(localStorage.getItem("data")) === null) return;
+
+    setData(JSON.parse(localStorage.getItem("data")));
+  }, []);
+
+  useEffect(() => {
+    let newData = [];
+    let j = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] === null || data[i] === undefined) {
+        console.log("Null/undefined");
+      } else {
+        newData[j] = data[i];
+        j++;
+      }
+    }
+
+    localStorage.setItem("data", JSON.stringify(newData));
+  }, [data]);
+
   return (
-    <div className="container">
-      <Header onClick={clickHandler} />
-      {!isFormOn ? (
-        <div>
-          {data.length === 0 ? (
-            <div>
-              <div className="main">
-                <p className="main-p">Press + to add cities</p>
-              </div>
-            </div>
-          ) : (
-            <div>
-              {data.map((value, index) => {
-                return (
-                  <Weather
-                    key={index}
-                    value={value}
-                    removeHandler={removeHandler}
-                    index={index}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </div>
+    <div>
+      {errorMessage === "" ? (
+        <div></div>
       ) : (
-        <div className="main-form">
-          <TextField
-            id="standard-basic"
-            label="cities"
-            variant="standard"
-            style={inputStyle}
-            onChange={changeHandler}
-            onKeyDown={sendRequest}
-          />
+        <div className="error-message">
+          <p className="error-message-p">{errorMessage}</p>
         </div>
       )}
+      <div className="container">
+        <Header onClick={clickHandler} />
+        {isFormOn ? (
+          <div className="main-form">
+            <TextField
+              id="standard-basic"
+              label="cities"
+              variant="standard"
+              style={inputStyle}
+              onChange={changeHandler}
+              onKeyDown={sendRequest}
+            />
+          </div>
+        ) : (
+          <div></div>
+        )}
+        {data.length === 0 ? (
+          <div>
+            <div className="main">
+              <p className="main-p">Press + to add cities</p>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {data.map((value, index) => {
+              return (
+                <Weather
+                  key={index}
+                  value={value}
+                  removeHandler={removeHandler}
+                  index={index}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
